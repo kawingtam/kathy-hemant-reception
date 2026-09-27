@@ -9,10 +9,20 @@
 
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='32' fill='%230d5c73'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-size='38' fill='%23e7c98e'%3E%26%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
+  <script src="language.js" defer></script>
   <script src="script.js" defer></script>
 </head>
 
 <body>
+  <dialog id="language-dialog" aria-labelledby="language-title" aria-describedby="language-description">
+    <p class="eyebrow">Kathy <span aria-hidden="true">&</span> Hemant</p>
+    <h2 id="language-title">Welcome <span lang="zh-Hant">歡迎您</span></h2>
+    <p id="language-description">Choose your preferred language.<br><span lang="zh-Hant">請選擇您偏好的語言。</span></p>
+    <div class="language-options">
+      <button type="button" data-language="en" lang="en">English</button>
+      <button type="button" data-language="zh-Hant" lang="zh-Hant">繁體中文</button>
+    </div>
+  </dialog>
   <a class="skip-link" href="#story">Skip to our story</a>
 
   <header class="site-header">
@@ -26,6 +36,8 @@
       <a href="#celebration">The celebration</a>
       <a href="#rsvp">RSVP</a>
     </nav>
+
+    <button id="language-toggle" type="button" aria-haspopup="dialog" aria-controls="language-dialog" hidden>中文 / EN</button>
 
     <a class="header-date" href="#celebration">11 · 10 · 2026</a>
   </header>

@@ -106,19 +106,19 @@ document.addEventListener('keydown', (event) => {
  const status = document.querySelector('#rsvp-status');
  const submit = form.querySelector('[type="submit"]');
  const endpoint = form.dataset.endpoint;
- submit.disabled = false; submit.textContent = 'Send RSVP';
- status.textContent = 'Please let us know any dietary needs so we can plan for you.';
+ submit.disabled = false; setLocalizedText(submit, 'Send RSVP');
+ setLocalizedText(status, 'Please let us know any dietary needs so we can plan for you.');
  let pending = null, timer, retryId = null, previousPayload = '';
- const fail = () => { clearTimeout(timer); pending = null; submit.disabled = false; submit.textContent = 'Try again'; status.textContent = 'We couldn’t confirm your RSVP. Your details are still here. Please try again.'; };
+ const fail = () => { clearTimeout(timer); pending = null; submit.disabled = false; setLocalizedText(submit, 'Try again'); setLocalizedText(status, 'We couldn’t confirm your RSVP. Your details are still here. Please try again.'); };
  form.addEventListener('submit', async event => {
   event.preventDefault(); if (submit.disabled || !form.reportValidity()) return;
   const data = new FormData(form);
   const fields = {destination:'US-Indian', guestName:String(data.get('name') || '').trim(), plusOneName:String(data.get('plus_one') || '').trim(), dietaryRestrictions:data.getAll('dietary_restrictions').join(', '), dietaryOther:String(data.get('dietary_other') || '').trim()};
-  if (!fields.guestName) { status.textContent = 'Please enter your name.'; form.elements.name.focus(); return; }
+  if (!fields.guestName) { setLocalizedText(status, 'Please enter your name.'); form.elements.name.focus(); return; }
   const payload = JSON.stringify(fields);
   if (!retryId || payload !== previousPayload) retryId = crypto.randomUUID();
   previousPayload = payload; fields.submissionId = retryId; pending = retryId;
-  submit.disabled = true; submit.textContent = 'Sending…'; status.textContent = 'Sending your RSVP…';
+  submit.disabled = true; setLocalizedText(submit, 'Sending…'); setLocalizedText(status, 'Sending your RSVP…');
   fields.transport = 'fetch';
   const controller = new AbortController(); timer = setTimeout(() => controller.abort(), 30000);
   try {
@@ -126,8 +126,8 @@ document.addEventListener('keydown', (event) => {
    const result = await response.json();
    if (!response.ok || !result.ok || result.id !== pending) throw new Error('Not confirmed');
    clearTimeout(timer); pending=null; retryId=null; previousPayload='';
-   status.textContent='Your RSVP has been received. We can’t wait to celebrate with you!';
-   form.reset(); submit.textContent='RSVP sent';
+   setLocalizedText(status, 'Your RSVP has been received. We can’t wait to celebrate with you!');
+   form.reset(); setLocalizedText(submit, 'RSVP sent');
   } catch { fail(); }
 
  });

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Language and RSVP smoke check</title>
+<h1>Language and RSVP smoke check</h1><pre id="result">Running…</pre>
+<iframe src="../index.html" title="Reception test page" style="width:390px;height:700px"></iframe>
+<script>
+// Run via a local HTTP server. All submissions are intercepted; nothing is sent to Google.
+document.querySelector('iframe').addEventListener('load', async event => {
+  const win = event.target.contentWindow, doc = win.document;
+  const check = (condition, message) => { if (!condition) throw new Error(message); };
+  const choose = language => doc.querySelector(`[data-language="${language}"]`).click();
+  const tick = () => new Promise(resolve => setTimeout(resolve, 0));
+  const form = doc.querySelector('form'), button = form.querySelector('[type="submit"]');
+  let request, finish;
+  win.fetch = async (url, options) => {
+    request = Object.fromEntries(options.body);
+    return new Promise(resolve => { finish = ok => resolve({ok: true, json: async () => ({ok, id: request.submissionId})}); });
+  };
+  try {
+    check(doc.querySelector('dialog').open, 'Entry picker missing');
+    choose('zh-Hant');
+    check(doc.documentElement.lang === 'zh-Hant' && !doc.querySelector('dialog').open, 'Chinese selection failed');
+    check(button.textContent === '送出回覆', 'Chinese RSVP label missing');
+    const invitation = doc.querySelector('.actual-invite');
+    check(invitation.getAttribute('href') === 'assets/invitation-chinese.png' && invitation.querySelector('img').getAttribute('src') === 'assets/invitation-chinese.png', 'Chinese invitation did not switch');
+    const name = doc.querySelector('#guest-name'), other = doc.querySelector('#diet-other');
+    name.value = '測試賓客'; doc.querySelector('#plus-one').value = 'Test Guest';
+    doc.querySelector('[value="Other"]').click();
+    check(other.required && !other.disabled && !other.parentElement.hidden, 'Other dietary requirements failed');
+    other.value = '測試飲食需求';
+    doc.querySelector('[value="No restrictions"]').click();
+    check(other.disabled && !doc.querySelector('[value="Other"]').checked, 'Exclusive option failed');
+    doc.querySelector('[value="Other"]').click();
+    doc.querySelector('[value="Vegetarian"]').click();
+    check(!doc.querySelector('[value="No restrictions"]').checked, 'No restrictions was not cleared');
+    doc.querySelector('#language-toggle').click(); choose('en');
+    check(name.value === '測試賓客' && other.value === '測試飲食需求', 'Language switch lost input');
+    check(invitation.getAttribute('href') === 'assets/invitation-original.png' && invitation.querySelector('img').getAttribute('src') === 'assets/invitation-original.png', 'English invitation did not restore');
+    form.requestSubmit();
+    check(button.disabled && button.textContent === 'Sending…', 'Sending state failed');
+    check(request.destination === 'US-Indian' && request.guestName === '測試賓客' && request.plusOneName === 'Test Guest', 'Payload changed');
+    check(request.dietaryRestrictions === 'Vegetarian, Other' && request.dietaryOther === '測試飲食需求', 'Dietary values changed');
+    const firstId = request.submissionId;
+    doc.querySelector('#language-toggle').click(); choose('zh-Hant');
+    check(button.textContent === '傳送中…' && button.disabled, 'Switch while sending failed');
+    finish(false); await tick();
+    check(!button.disabled && button.textContent === '再次嘗試' && name.value === '測試賓客', 'Failure recovery failed');
+    form.requestSubmit(); check(request.submissionId === firstId, 'Retry ID changed');
+    finish(true); await tick(); await tick();
+    check(button.textContent === '回覆已送出' && button.disabled && name.value === '', 'Success state failed');
+    check(other.disabled && other.parentElement.hidden, 'Dietary reset failed');
+    doc.querySelector('#language-toggle').click(); choose('en');
+    check(button.textContent === 'RSVP sent' && doc.querySelector('#rsvp-status').textContent.startsWith('Your RSVP has been received.'), 'Success state lost on language change');
+    check(doc.querySelector('#story-title').textContent.includes('One beautiful story.'), 'English restoration failed');
+    document.querySelector('#result').textContent = 'PASS: entry picker, translations, preserved input, dietary rules, payload, pending switch, failure, retry ID, success and reset. No network submissions.';
+  } catch (error) { document.querySelector('#result').textContent = 'FAIL: ' + error.message; }
+});
+</script></html>

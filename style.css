@@ -2860,3 +2860,45 @@ main{isolation:isolate}.flight-layer{z-index:0}main>section{position:relative;z-
     background: radial-gradient(ellipse at center, #e7c98e99 15%, #e7c98e45 55%, transparent 76%);
   }
 }
+
+/* Both languages share the same layout, colors, and typographic roles. */
+:root {
+  --serif: Georgia, "Times New Roman", "Songti TC", "Noto Serif TC", serif;
+  --sans: "Avenir Next", Avenir, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+#language-toggle, .language-options button {
+  border: 1px solid var(--dusty);
+  border-radius: 4px;
+  background: var(--ivory);
+  color: var(--blue);
+  padding: 10px 14px;
+  font: inherit;
+  cursor: pointer;
+}
+#language-toggle { font-size: 12px; white-space: nowrap; }
+#language-dialog {
+  width: min(460px, calc(100% - 36px));
+  max-height: calc(100dvh - 36px);
+  padding: 40px 24px;
+  border: 1px solid var(--gold);
+  border-radius: 100px 100px 12px 12px;
+  background: var(--ivory);
+  color: var(--blue);
+  text-align: center;
+  box-shadow: 0 18px 70px #244f5d33;
+}
+#language-dialog::backdrop { background: #244f5d80; backdrop-filter: blur(4px); }
+body:has(#language-dialog[open]) { overflow: hidden; }
+#language-dialog h2 { margin: 18px 0 12px; font: 32px var(--serif); }
+#language-dialog h2 span { display: block; margin-top: 8px; }
+#language-description { font-size: 14px; line-height: 1.9; }
+.language-options { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+.language-options button { min-width: 130px; }
+.language-options button:hover, .language-options button[aria-pressed="true"] { background: var(--blue); color: var(--ivory); }
+#language-toggle:focus-visible, .language-options button:focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; }
+html:lang(zh-Hant) .hero h1 { letter-spacing: -2px; }
+html:lang(zh-Hant) .section-heading h2, html:lang(zh-Hant) .closing h2 { letter-spacing: normal; }
+@media (max-width: 560px) {
+  .site-header nav { order: 3; flex-basis: 100%; }
+  #language-dialog { padding: 32px 18px; }
+}
