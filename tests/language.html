@@ -20,6 +20,7 @@ document.querySelector('iframe').addEventListener('load', async event => {
     choose('zh-Hant');
     check(doc.documentElement.lang === 'zh-Hant' && !doc.querySelector('dialog').open, 'Chinese selection failed');
     check(button.textContent === '送出回覆', 'Chinese RSVP label missing');
+    check(doc.querySelector('#rsvp-status').textContent === '請告訴我們您的飲食需求，讓我們為您妥善安排。', 'Chinese dietary hint missing');
     const invitation = doc.querySelector('.actual-invite');
     check(invitation.getAttribute('href') === 'assets/invitation-chinese.png' && invitation.querySelector('img').getAttribute('src') === 'assets/invitation-chinese.png', 'Chinese invitation did not switch');
     const name = doc.querySelector('#guest-name'), other = doc.querySelector('#diet-other');
