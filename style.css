@@ -580,6 +580,12 @@ main {
 }
 
 
+.hero-rsvp {
+  font-size: 12px;
+  letter-spacing: 1.3px;
+}
+
+
 .scroll-cue {
   display: inline-flex;
 
